@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Çıkış Yapıldı.{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h3>Görüşürüz, {{user.username}}</h3>
+        <p>Başarıyla çıkış yaptınız.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">Yeniden Giriş Yap</a>
+    </div>
+{% endblock %}

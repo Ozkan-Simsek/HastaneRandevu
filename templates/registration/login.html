@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Sayfanın arka planına modern, yumuşak bir degrade ekleyelim */
+    .login-bg {
+        background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+        min-height: 85vh; /* Ekranı kaplaması için */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .login-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Yumuşak gölge */
+        overflow: hidden;
+        max-width: 420px;
+        width: 100%;
+        background: white;
+        transition: transform 0.3s;
+    }
+    
+    .login-card:hover {
+        transform: translateY(-5px); /* Üzerine gelince hafif yükselme efekti */
+    }
+
+    .login-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); /* MedAI Mavisi */
+        padding: 40px 20px;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+    
+    /* Dekoratif dalga efekti (Opsiyonel ama şık durur) */
+    .login-header::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        background: white;
+        border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+
+    /* Input Alanları */
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        background-color: #f8f9fa;
+    }
+    .form-control:focus {
+        background-color: white;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    }
+</style>
+
+<div class="login-bg">
+    <div class="login-card">
+        
+        <div class="login-header">
+            <div class="bg-white text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px;">
+                <i class="fa-solid fa-user-doctor fa-2x"></i>
+            </div>
+            <h3 class="fw-bold mb-1">Hoş Geldiniz</h3>
+            <p class="mb-0 opacity-75 small">MedAI Randevu Sistemine Giriş</p>
+        </div>
+
+        <div class="p-4 p-md-5">
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger py-2 small rounded-3 mb-4 shadow-sm border-0">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-circle-exclamation me-2 fs-5"></i>
+                        <div>Kullanıcı adı veya parola hatalı.</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="form-floating mb-3">
+                    <input type="text" name="username" class="form-control" id="id_username" placeholder="Kullanıcı Adı" required autofocus>
+                    <label for="id_username" class="text-muted">
+                        <i class="fa-solid fa-user me-2"></i>Kullanıcı Adı
+                    </label>
+                </div>
+
+                <div class="form-floating mb-4">
+                    <input type="password" name="password" class="form-control" id="id_password" placeholder="Parola" required>
+                    <label for="id_password" class="text-muted">
+                        <i class="fa-solid fa-lock me-2"></i>Parola
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm mb-4">
+                    Giriş Yap <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+                </button>
+
+                <div class="text-center border-top pt-4">
+                    <p class="text-muted small mb-1">Hesabınız yok mu?</p>
+                    <a href="{% url 'register' %}" class="text-decoration-none fw-bold text-primary">
+                        <i class="fa-solid fa-user-plus me-1"></i> Hemen Kayıt Ol
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

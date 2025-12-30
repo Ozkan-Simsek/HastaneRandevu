@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel - MedAI{% endblock %}
+
+{% block content %}
+<style>
+
+    .welcome-banner {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 30px 20px;
+        border-radius: 16px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    
+    .stat-card-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 15px; 
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #1e293b;
+    }
+
+    .bg-blue-light { background-color: #e0f2fe; color: #0284c7; }
+    .bg-green-light { background-color: #dcfce7; color: #16a34a; }
+    .bg-purple-light { background-color: #f3e8ff; color: #9333ea; }
+
+    .appointment-item {
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease;
+        background-color: white;
+    }
+    .appointment-item:hover {
+        background-color: #f8fafc;
+        border-left-color: #2563eb;
+        transform: translateX(5px);
+    }
+    
+    @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+    .btn-emergency-main {
+        animation: pulse-red 2s infinite;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+</style>
+
+<div class="container-fluid py-2">
+    
+    <div class="mb-4">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="emergency_dashboard" class="btn btn-danger w-100 py-3 rounded-pill shadow-lg btn-emergency-main">
+                <i class="fa-solid fa-truck-medical fa-lg me-2"></i> ACİL DURUM / YARDIM ÇAĞIR
+            </button>
+        </form>
+    </div>
+
+    <div class="welcome-banner">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-2">Merhaba, {{ user.username|title }} 👋</h1>
+                <p class="mb-0 opacity-75">Yapay zeka destekli sağlık asistanın bugün senin için hazır.</p>
+            </div>
+            <div class="col-md-4 text-end d-none d-md-block">
+                <i class="fa-solid fa-user-doctor fa-4x opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-blue-light">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-label">AKTİF RANDEVULAR</div>
+                    <div class="stat-value">{{ upcoming.count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-green-light">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <div class="stat-label">SAĞLIK DURUMU</div>
+                    <div class="stat-value text-success">Stabil</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-purple-light">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="stat-label">AI ANALİZLERİ</div>
+                    <div class="stat-value">Aktif</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white p-4 border-bottom-0 d-md-flex justify-content-between align-items-center">
+                    <h4 class="fw-bold mb-3 mb-md-0">Yaklaşan Randevularınız</h4>
+                    
+                    <form method="GET" class="d-flex" style="min-width: 250px;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0"><i class="fa-solid fa-search text-muted"></i></span>
+                            <input type="text" name="q" class="form-control bg-light border-0" placeholder="Randevu ara..." value="{{ query }}">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-body p-0">
+                    {% if upcoming %}
+                        <div class="list-group list-group-flush">
+                            {% for app in upcoming %}
+                            <a href="{% url 'appointment_detail' app.pk %}" class="list-group-item list-group-item-action appointment-item p-4 border-bottom text-decoration-none">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary text-white rounded-circle d-flex flex-column align-items-center justify-content-center me-4 shadow-sm" style="width: 60px; height: 60px;">
+                                            <span class="fw-bold fs-4" style="line-height: 1;">{{ app.date|date:"d" }}</span>
+                                            <span class="small" style="font-size: 0.7rem;">{{ app.date|date:"M"|upper }}</span>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1 fw-bold text-dark">{{ app.title }}</h5>
+                                            <div class="text-muted small">
+                                                <i class="fa-solid fa-user-md me-1 text-primary"></i> {{ app.doctor.name }} 
+                                                <span class="badge bg-info bg-opacity-10 text-info ms-2 border border-info">{{ app.doctor.speciality }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-end d-none d-sm-block">
+                                        <div class="fw-bold text-primary fs-5">{{ app.date|date:"H:i" }}</div>
+                                        <small class="text-muted">{{ app.date|date:"l" }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-3 text-muted opacity-25">
+                                <i class="fa-regular fa-calendar-xmark fa-4x"></i>
+                            </div>
+                            <h5 class="text-muted fw-bold">Randevu Bulunamadı</h5>
+                            <p class="text-muted small mb-4">Şu an yaklaşan bir randevunuz yok veya aramanızla eşleşen sonuç bulunamadı.</p>
+                            <a href="{% url 'appointment_create' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">
+                                <i class="fa-solid fa-plus me-2"></i>Hemen Randevu Al
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

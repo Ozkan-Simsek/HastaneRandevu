@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Geçmiş Randevular{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-4 px-4 border-bottom">
+            <h4 class="mb-0 fw-bold text-primary">
+                <i class="fa-solid fa-clock-rotate-left me-2"></i>Randevu Geçmişi
+            </h4>
+        </div>
+        <div class="card-body p-0">
+            {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-secondary">
+                            <tr>
+                                <th class="ps-4 py-3">Tarih</th>
+                                <th class="py-3">Başlık & Şikayet</th>
+                                <th class="py-3">Doktor</th>
+                                <th class="py-3">Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in appointments %}
+                            <tr style="cursor: pointer;">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light text-dark rounded-3 d-flex flex-column align-items-center justify-content-center me-3 border" style="width: 50px; height: 50px;">
+                                            <span class="fw-bold fs-5" style="line-height: 1;">{{ app.date|date:"d" }}</span>
+                                            <span class="small text-uppercase" style="font-size: 0.65rem;">{{ app.date|date:"M" }}</span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ app.date|date:"l" }}</div>
+                                            <small class="text-muted">{{ app.date|date:"H:i" }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="py-3">
+                                    <div class="fw-bold text-dark">{{ app.title }}</div>
+                                    <small class="text-muted text-truncate d-block" style="max-width: 250px;">
+                                        {{ app.description }}
+                                    </small>
+                                </td>
+
+                                <td class="py-3">
+                                    {% if app.doctor %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                <i class="fa-solid fa-user-doctor text-primary small"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold small text-dark">{{ app.doctor.name }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">{{ app.doctor.speciality }}</div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3">
+                                    {% if not app.status %}
+                                        <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-question me-1"></i> Durum Yok
+                                        </span>
+
+                                    {% elif app.status.name == 'Cancelled' or app.status.name == 'Iptal' %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-xmark me-1"></i> İptal Edildi
+                                        </span>
+                                    
+                                    {% elif app.status.name == 'Completed' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-check-double me-1"></i> Tamamlandı
+                                        </span>
+
+                                    {% elif app.status.name == 'Approved' or app.status.name == 'Onaylandi' %}
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-calendar-check me-1"></i> Onaylandı
+                                        </span>
+
+                                    {% elif app.status.name == 'Pending' %}
+                                        <span class="badge bg-warning bg-opacity-25 text-warning-emphasis border border-warning px-3 py-2 rounded-pill">
+                                            <i class="fa-regular fa-clock me-1"></i> Beklemede
+                                        </span>
+
+                                    {% else %}
+                                        <span class="badge bg-secondary px-3 py-2 rounded-pill">
+                                            {{ app.status.name }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-3 opacity-25">
+                        <i class="fa-solid fa-calendar-xmark fa-4x text-muted"></i>
+                    </div>
+                    <h5 class="text-muted fw-bold">Kayıt Bulunamadı</h5>
+                    <p class="text-muted small">Henüz geçmişe dönük bir randevu kaydınız bulunmuyor.</p>
+                    <a href="{% url 'appointment_create' %}" class="btn btn-outline-primary rounded-pill px-4 mt-2">
+                        Yeni Randevu Al
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

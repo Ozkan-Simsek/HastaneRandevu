@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% block title %}Randevu Planla{% endblock %}
+
+{% block content %}
+<style>
+    .medical-card { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; }
+    .medical-header { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); padding: 30px; color: white; }
+    .form-label { font-weight: 600; color: #495057; font-size: 0.9rem; margin-bottom: 8px; }
+    .form-control, .form-select { border-radius: 10px; border: 1px solid #ced4da; padding: 12px; transition: all 0.3s; }
+    .form-control:focus, .form-select:focus { border-color: #0d6efd; box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1); }
+    
+    /* Slot Butonları */
+    .slot-btn { width: 100px; margin: 5px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+    .slot-input:checked + .slot-label .slot-btn { background-color: #198754; color: white; transform: scale(1.1); }
+    .slot-input { display: none; }
+
+    /* Mikrofon Animasyonu */
+    @keyframes pulse-mic { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
+    .mic-listening { animation: pulse-mic 1.5s infinite; background-color: #dc3545 !important; color: white !important; border-color: #dc3545 !important; }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            
+            {% if emergency_alert %}
+            <div class="alert alert-danger border-0 shadow-lg p-4 mb-4 text-center">
+                <i class="fa-solid fa-truck-medical fa-beat fa-4x mb-3"></i>
+                <h2 class="fw-bold">ACİL DURUM TESPİT EDİLDİ!</h2>
+                <div class="d-grid gap-2 col-md-8 mx-auto mt-4">
+                    <a href="tel:112" class="btn btn-light text-danger fw-bold btn-lg">HEMEN 112'Yİ ARA</a>
+                    
+                    <a href="{% url 'appointment_create' %}" class="btn btn-outline-light">
+                        Yanlışlık oldu
+                    </a>
+                    
+                </div>
+            </div>
+            <style> .medical-card { display: none; } </style>
+            {% endif %}
+
+            <div class="card medical-card">
+                <div class="medical-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h3 class="mb-1">🏥 Yeni Randevu Oluştur</h3>
+                            <p class="mb-0 opacity-75">Şikayetinizi belirtin veya doktorunuzu seçin.</p>
+                        </div>
+                        <div class="d-none d-md-block"><span style="font-size: 2.5rem;">📅</span></div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" enctype="multipart/form-data" id="appointmentForm">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <button type="submit" name="emergency_mode" class="btn btn-danger w-100 py-3 shadow fw-bold text-uppercase" formnovalidate>
+                                🚨 Acil Durum / Hayati Tehlike Var!
+                            </button>
+                        </div>
+
+                        {% if form.errors %}
+                            <div class="alert alert-danger">Lütfen alanları kontrol ediniz.</div>
+                        {% endif %}
+                        
+                        <div class="p-3 bg-light rounded border mb-4">
+                            <div class="mb-3">
+                                <label class="form-label">📝 Şikayetiniz / Belirtileriniz</label>
+                                <div class="input-group">
+                                    {{ form.description }}
+                                    <button class="btn btn-outline-secondary" type="button" id="micBtn" title="Konuşarak Yaz">
+                                        <i class="fa-solid fa-microphone fa-lg"></i>
+                                    </button>
+                                </div>
+                                <div id="listeningText" class="text-danger fw-bold small d-none mt-1">Dinleniyor...</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold small text-muted">📂 Dosya/Rapor (Opsiyonel)</label>
+                                    {{ form.document }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">📅 Tarih Seçiniz</label>
+                                    {{ form.date }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <h5 class="fw-bold text-primary">Nasıl Devam Etmek İstersiniz?</h5>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="h-100 p-3 border rounded shadow-sm text-center bg-white" id="aiBox">
+                                    <i class="fa-solid fa-robot fa-2x text-info mb-2"></i>
+                                    <h6 class="fw-bold">Yapay Zeka Önersin</h6>
+                                    <p class="small text-muted">Şikayetinize en uygun doktoru otomatik bulur.</p>
+                                    <button type="submit" name="analyze" class="btn btn-info text-white w-100 fw-bold">
+                                        ✨ AI ile Doktor Bul
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="h-100 p-3 border rounded shadow-sm bg-white" id="manualBox">
+                                    <div class="text-center mb-3" id="manualIntro">
+                                        <i class="fa-solid fa-user-doctor fa-2x text-warning mb-2"></i>
+                                        <h6 class="fw-bold">Kendim Seçmek İstiyorum</h6>
+                                        <button type="button" class="btn btn-outline-warning text-dark w-100 fw-bold" onclick="openManual()">
+                                            Listeyi Aç
+                                        </button>
+                                    </div>
+
+                                    <div id="manualSelectionArea" style="display: none;">
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">1. Bölüm</label>
+                                            <select id="specialtySelect" class="form-select form-select-sm" onchange="filterDoctors()">
+                                                <option value="">-- Seçiniz --</option>
+                                                {% for spec in all_specialties %}
+                                                    <option value="{{ spec }}">{{ spec }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">2. Doktor</label>
+                                            
+                                            <select name="doctor" id="id_doctor" class="form-select form-select-sm" 
+                                                {% if not selected_doctor_id %}disabled{% endif %}>
+                                                
+                                                <option value="">-- Önce Bölüm --</option>
+                                                
+                                                {% for doc in all_doctors %}
+                                                    <option value="{{ doc.id }}" 
+                                                            data-spec="{{ doc.speciality }}"
+                                                            {% if doc.id == selected_doctor_id %}selected{% endif %}>
+                                                        {{ doc.name }} ({{ doc.speciality }})
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                            
+                                            <div class="form-text text-danger small" id="noDocMessage" style="display:none;">Doktor yok.</div>
+                                        </div>
+                                        
+                                        <button type="submit" name="get_manual_slots" class="btn btn-warning btn-sm w-100 fw-bold" formnovalidate>
+                                            <i class="fa-solid fa-clock me-1"></i> Saatleri Göster
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if request.method == 'POST' and 'analyze' in request.POST %}
+                            <div class="alert alert-success border-0 shadow-sm mt-4">
+                                <i class="fa-solid fa-check-circle me-2"></i>
+                                <span class="fw-bold">AI Önerisi:</span> Uygun doktor seçildi.
+                            </div>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    openManual(); 
+                                });
+                            </script>
+                        {% endif %}
+
+                        {% if slots %}
+                        <div class="card bg-light border-0 mt-4 shadow-sm">
+                            <div class="card-body text-center">
+                                <h5 class="text-primary mb-3">📅 {{ target_date|date:"d F Y l" }} - Müsait Saatler</h5>
+                                <div class="d-flex flex-wrap justify-content-center">
+                                    {% for slot in slots %}
+                                        <input type="radio" name="selected_slot" id="slot_{{forloop.counter}}" value="{{slot}}" class="slot-input" required>
+                                        <label for="slot_{{forloop.counter}}" class="slot-label">
+                                            <div class="btn btn-outline-success slot-btn">{{ slot }}</div>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <div class="d-grid gap-2">
+                            <button type="submit" name="save_appointment" class="btn btn-primary btn-lg px-5 shadow-sm">
+                                ✅ Randevuyu Onayla ve Bitir
+                            </button>
+                        </div>
+                        {% endif %}
+
+                        {% if request.method == 'POST' and not slots and 'save_appointment' not in request.POST %}
+                             <div class="alert alert-warning text-center mt-3">
+                                Bu tarihte veya doktorda uygun saat bulunamadı.
+                            </div>
+                        {% endif %}
+                        
+                        <div id="manualModeData" data-is-manual="{{ manual_mode|yesno:'true,false' }}"></div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openManual() {
+        document.getElementById('manualIntro').style.display = 'none';
+        document.getElementById('manualSelectionArea').style.display = 'block';
+    }
+
+    function filterDoctors() {
+        var selectedSpec = document.getElementById("specialtySelect").value;
+        var doctorSelect = document.getElementById("id_doctor");
+        var options = doctorSelect.options;
+        var found = false;
+
+        doctorSelect.value = ""; 
+        
+        if (selectedSpec === "") {
+            doctorSelect.disabled = true; 
+            return;
+        }
+
+        doctorSelect.disabled = false; 
+
+        for (var i = 0; i < options.length; i++) {
+            var option = options[i];
+            var docSpec = option.getAttribute("data-spec"); 
+            if (option.value === "") continue; 
+
+            if (docSpec === selectedSpec) {
+                option.style.display = "block"; 
+                found = true;
+            } else {
+                option.style.display = "none";  
+            }
+        }
+        var msg = document.getElementById("noDocMessage");
+        if (!found) { msg.style.display = "block"; } else { msg.style.display = "none"; }
+    }
+
+    var dataDiv = document.getElementById("manualModeData");
+    if (dataDiv) {
+        var isManual = dataDiv.getAttribute("data-is-manual") === "true";
+        if (isManual) {
+            document.addEventListener("DOMContentLoaded", function() {
+                openManual();
+                // KUTUYU ZORLA AÇIK TUT VE KİLİDİ KALDIR
+                var docSelect = document.getElementById("id_doctor");
+                docSelect.disabled = false;
+            });
+        }
+    }
+
+    if ('webkitSpeechRecognition' in window) {
+        const recognition = new webkitSpeechRecognition();
+        const micBtn = document.getElementById('micBtn');
+        const descInput = document.getElementById('id_description');
+        const listeningText = document.getElementById('listeningText');
+        recognition.lang = 'tr-TR';
+        recognition.continuous = false; 
+
+        micBtn.onclick = function() { recognition.start(); };
+        recognition.onstart = function() { micBtn.classList.add('mic-listening'); listeningText.classList.remove('d-none'); };
+        recognition.onend = function() { micBtn.classList.remove('mic-listening'); listeningText.classList.add('d-none'); };
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            if (descInput.value.length > 0) { descInput.value += " " + transcript; } else { descInput.value = transcript; }
+        };
+    } else {
+        document.getElementById('micBtn').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

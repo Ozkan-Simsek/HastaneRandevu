@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Randevu Sistemi{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --bg-color: #f0f4f8; 
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: #1e293b;
+            margin-top: 80px; 
+        }
+
+        .navbar {
+            background-color: #ffffff !important;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            padding: 15px 0;
+            backdrop-filter: blur(10px); 
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            color: #475569 !important;
+            font-weight: 500;
+            margin-left: 15px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            transform: translateY(-2px);
+        }
+
+        .btn-custom-nav {
+            background-color: var(--primary-color);
+            color: white !important;
+            border-radius: 50px;
+            padding: 8px 25px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s;
+        }
+
+        .btn-custom-nav:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            background: white;
+            transition: transform 0.2s;
+        }
+        
+        .alert {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a href="{% url 'dashboard' %}" class="navbar-brand">
+                <i class="fa-solid fa-heart-pulse me-2"></i>MedAI Randevu
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="ms-auto d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="nav-link"><i class="fa-solid fa-house me-1"></i> Anasayfa</a>
+                        <a href="{% url 'appointment_history' %}" class="nav-link"><i class="fa-solid fa-clock-rotate-left me-1"></i> Geçmiş</a>
+                        <a class="nav-link" href="{% url 'my_reports' %}">
+                        <i class="fa-solid fa-folder-open me-1"></i> Raporlarım
+                        </a>
+                        <a href="{% url 'appointment_create' %}" class="nav-link btn btn-custom-nav ms-3">
+                            <i class="fa-solid fa-plus me-1"></i> Yeni Randevu
+                        </a>
+                        
+                        <form method="POST" action="{% url 'logout' %}" class="d-inline ms-3">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link nav-link text-danger" style="text-decoration: none;">
+                                <i class="fa-solid fa-right-from-bracket"></i> Çıkış
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-link">Giriş Yap</a>
+                        <a href="{% url 'register' %}" class="btn btn-custom-nav ms-3">Kayıt Ol</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+                    <div class="me-2">
+                        {% if message.tags == 'success' %}<i class="fa-solid fa-circle-check fa-lg"></i>{% endif %}
+                        {% if message.tags == 'warning' %}<i class="fa-solid fa-triangle-exclamation fa-lg"></i>{% endif %}
+                        {% if message.tags == 'error' %}<i class="fa-solid fa-circle-xmark fa-lg"></i>{% endif %}
+                        {% if message.tags == 'info' %}<i class="fa-solid fa-circle-info fa-lg"></i>{% endif %}
+                    </div>
+                    <div>{{ message }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="container mb-5">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

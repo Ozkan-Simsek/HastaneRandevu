@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Giriş sayfasıyla aynı modern arka plan */
+    .register-bg {
+        background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+    
+    .register-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        overflow: hidden;
+        max-width: 500px; /* Kayıt formu biraz daha geniş olsun */
+        width: 100%;
+        background: white;
+    }
+
+    .register-header {
+        background: linear-gradient(135deg, #198754 0%, #20c997 100%); /* Kayıt için Yeşil Tonlar */
+        padding: 30px 20px;
+        text-align: center;
+        color: white;
+    }
+
+    /* Form Elemanları Tasarımı */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #495057;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Django form inputlarını CSS ile yakalayıp güzelleştiriyoruz */
+    .register-card input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        transition: all 0.3s;
+    }
+
+    .register-card input:focus {
+        background-color: white;
+        border-color: #198754;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1);
+    }
+
+    /* Yardım Metinleri (Parola kuralları vb.) */
+    .helptext, .form-text {
+        font-size: 0.8rem;
+        color: #8898aa;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    /* Liste halindeki hata/yardım mesajlarını temizle */
+    .register-card ul {
+        padding-left: 20px;
+        margin-top: 5px;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+</style>
+
+<div class="register-bg">
+    <div class="register-card">
+        
+        <div class="register-header">
+            <div class="bg-white text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 60px; height: 60px;">
+                <i class="fa-solid fa-user-plus fa-2x"></i>
+            </div>
+            <h3 class="fw-bold mb-1">Aramıza Katılın</h3>
+            <p class="mb-0 opacity-75 small">Hızlıca yeni bir hesap oluşturun.</p>
+        </div>
+
+        <div class="p-4 p-md-5">
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2 small rounded-3 mb-4 border-0">
+                    {% for error in form.non_field_errors %}
+                        <div><i class="fa-solid fa-circle-exclamation me-1"></i> {{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }} {{ field }}           {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in field.errors %}
+                                <i class="fa-solid fa-circle-exclamation me-1"></i> {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if field.help_text %}
+                        <div class="helptext text-muted small">
+                            <i class="fa-solid fa-circle-info me-1"></i> {{ field.help_text|safe }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm mt-3 mb-4">
+                    Kayıt İşlemini Tamamla <i class="fa-solid fa-check ms-2"></i>
+                </button>
+
+                <div class="text-center border-top pt-4">
+                    <p class="text-muted small mb-1">Zaten bir hesabınız var mı?</p>
+                    <a href="{% url 'login' %}" class="text-decoration-none fw-bold text-success">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i> Giriş Yapın
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

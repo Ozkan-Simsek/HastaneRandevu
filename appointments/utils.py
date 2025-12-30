@@ -2,8 +2,7 @@ import unicodedata
 import re
 import google.generativeai as genai
 
-
-MY_API_KEY = "AIzaSyBYzAp2edMFSQRncKiFwROLNEbwXEph-AY" 
+MY_API_KEY="BURAYA_KENDI_API_KEYINIZI_YAZIN"
 
 try:
     genai.configure(api_key=MY_API_KEY)

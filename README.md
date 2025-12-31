@@ -33,6 +33,8 @@ Klavye kullanmakta zorlanan hastalar için **Web Speech API** teknolojisi kullan
 <img width="1918" height="867" alt="Rapor" src="https://github.com/user-attachments/assets/2631b8a3-2962-405b-9917-91c707fd1a80" />
 <img width="1901" height="870" alt="GecmisRandevu" src="https://github.com/user-attachments/assets/9613085b-37db-493f-9aa5-fefbe4bc9115" />
 <img width="1898" height="867" alt="Anasayfa" src="https://github.com/user-attachments/assets/ad0c24a1-36d1-4bf9-8ba9-c57e71217de0" />
+<img width="1287" height="865" alt="Randevu" src="https://github.com/user-attachments/assets/77b1de70-3a0d-462f-b1ce-00ecce4dd76c" />
+
 
 ## ⚙️ Kurulum (Nasıl Çalıştırılır?)
 

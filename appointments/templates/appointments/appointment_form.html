@@ -9,12 +9,10 @@
     .form-control, .form-select { border-radius: 10px; border: 1px solid #ced4da; padding: 12px; transition: all 0.3s; }
     .form-control:focus, .form-select:focus { border-color: #0d6efd; box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1); }
     
-    /* Slot Butonları */
     .slot-btn { width: 100px; margin: 5px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
     .slot-input:checked + .slot-label .slot-btn { background-color: #198754; color: white; transform: scale(1.1); }
     .slot-input { display: none; }
 
-    /* Mikrofon Animasyonu */
     @keyframes pulse-mic { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
     .mic-listening { animation: pulse-mic 1.5s infinite; background-color: #dc3545 !important; color: white !important; border-color: #dc3545 !important; }
 </style>
@@ -168,15 +166,26 @@
                         <div class="card bg-light border-0 mt-4 shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="text-primary mb-3">📅 {{ target_date|date:"d F Y l" }} - Müsait Saatler</h5>
-                                <div class="d-flex flex-wrap justify-content-center">
+                                
+                                <div class="d-flex flex-wrap justify-content-center gap-2">
                                     {% for slot in slots %}
-                                        <input type="radio" name="selected_slot" id="slot_{{forloop.counter}}" value="{{slot}}" class="slot-input" required>
-                                        <label for="slot_{{forloop.counter}}" class="slot-label">
-                                            <div class="btn btn-outline-success slot-btn">{{ slot }}</div>
-                                        </label>
+                                        
+                                        {% if slot.is_taken %}
+                                            <button type="button" class="btn btn-light border text-muted slot-btn" disabled 
+                                                    style="cursor: not-allowed; opacity: 0.6; text-decoration: line-through;" 
+                                                    title="Bu saat dolu">
+                                                {{ slot.time }}
+                                            </button>
+                                        {% else %}
+                                            <input type="radio" name="selected_slot" id="slot_{{forloop.counter}}" value="{{ slot.time }}" class="slot-input" required>
+                                            <label for="slot_{{forloop.counter}}" class="slot-label">
+                                                <div class="btn btn-outline-success slot-btn">{{ slot.time }}</div>
+                                            </label>
+                                        {% endif %}
+
                                     {% endfor %}
                                 </div>
-                            </div>
+                                </div>
                         </div>
 
                         <hr class="my-4">
@@ -245,7 +254,6 @@
         if (isManual) {
             document.addEventListener("DOMContentLoaded", function() {
                 openManual();
-                // KUTUYU ZORLA AÇIK TUT VE KİLİDİ KALDIR
                 var docSelect = document.getElementById("id_doctor");
                 docSelect.disabled = false;
             });

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-primary text-white h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="display-4 me-3"><i class="fa-solid fa-calendar-day"></i></div>
+                    <div>
+                        <h6 class="text-uppercase mb-1 opacity-75">Bugünkü Randevular</h6>
+                        <h2 class="mb-0 fw-bold">{{ stats.total_today }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-warning text-dark h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="display-4 me-3"><i class="fa-solid fa-user-clock"></i></div>
+                    <div>
+                        <h6 class="text-uppercase mb-1 opacity-75">Bekleyen Hasta</h6>
+                        <h2 class="mb-0 fw-bold">{{ stats.pending }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-success text-white h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="display-4 me-3"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <div>
+                        <h6 class="text-uppercase mb-1 opacity-75">Tamamlanan</h6>
+                        <h2 class="mb-0 fw-bold">{{ stats.completed }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-primary fw-bold">
+                <i class="fa-solid fa-list-ul me-2"></i> Randevu Listesi
+            </h5>
+            <span class="badge bg-light text-dark border">{{ today|date:"d F Y" }}</span>
+        </div>
+        <div class="card-body p-0">
+            {% if appointments %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Saat</th>
+                            <th>Hasta Adı</th>
+                            <th>Şikayet / Not</th>
+                            <th>Durum</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in appointments %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark">{{ app.date|date:"H:i" }}</div>
+                                <div class="small text-muted">{{ app.date|date:"d.m.Y" }}</div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-info text-white me-2 rounded-circle d-flex justify-content-center align-items-center" style="width: 35px; height: 35px;">
+                                        {{ app.user.username|make_list|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ app.user.get_full_name|default:app.user.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="d-inline-block text-truncate" style="max-width: 200px;" title="{{ app.description }}">
+                                    {{ app.description|default:"-" }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if app.status.name == 'Pending' %}
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Bekliyor</span>
+                                {% elif app.status.name == 'Completed' %}
+                                    <span class="badge bg-success px-3 py-2 rounded-pill">Tamamlandı</span>
+                                {% else %}
+                                    <span class="badge bg-secondary px-3 py-2 rounded-pill">{{ app.status.name }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                {% if app.status.name != 'Completed' %}
+                                    <a href="{% url 'add_prescription' app.id %}" 
+                                        class="btn btn-outline-success btn-sm me-1" 
+                                        title="Reçete Yaz ve Tamamla">
+                                        <i class="fa-solid fa-file-signature"></i>
+                                    </a>
+                                    <a href="{% url 'update_status' app.id 'iptal' %}" class="btn btn-outline-danger btn-sm" title="İptal Et" onclick="return confirm('İptal etmek istediğinize emin misiniz?');">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-success small"><i class="fa-solid fa-check-double"></i> İşlendi</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-regular fa-calendar-xmark fa-3x mb-3 opacity-50"></i>
+                <p>Şu an için bekleyen randevunuz bulunmamaktadır.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django import forms
 from .models import Appointment
 from datetime import datetime
+from .models import Prescription
 
 class AppointmentForm(forms.ModelForm):
     class Meta:
@@ -22,3 +23,13 @@ class AppointmentForm(forms.ModelForm):
         self.fields['document'].label = "Dosya Yükle"
         
         self.fields['date'].initial = datetime.now().date()
+
+
+class PrescriptionForm(forms.ModelForm):
+    class Meta:
+        model = Prescription
+        fields = ['diagnosis', 'medicines']
+        widgets = {
+            'diagnosis': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Örn: Soğuk Algınlığı'}),
+            'medicines': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Örn: \n1. Parol (Sabah-Akşam)\n2. C Vitamini'}),
+        }

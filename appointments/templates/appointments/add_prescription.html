@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fa-solid fa-file-prescription me-2"></i>Reçete Oluştur</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-light border mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                            <strong>Hasta:</strong> {{ appointment.user.get_full_name|default:appointment.user.username }}
+                        </div>
+                            <div class="col-md-6"><strong>Tarih:</strong> {{ appointment.date|date:"d M Y" }}</div>
+                            <div class="col-12 mt-2"><strong>Şikayet:</strong> {{ appointment.description }}</div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Teşhis / Tanı</label>
+                            {{ form.diagnosis }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İlaçlar ve Kullanım Talimatı</label>
+                            {{ form.medicines }}
+                            <div class="form-text">Her ilacı yeni bir satıra yazınız.</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'doctor_panel' %}" class="btn btn-secondary me-2">İptal</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa-solid fa-check"></i> Kaydet ve Tamamla
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

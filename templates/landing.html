@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .role-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        border: none;
+        border-radius: 20px;
+    }
+    .role-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    .role-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+    .bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .bg-gradient-info { background: linear-gradient(135deg, #2af598 0%, #009efd 100%); }
+</style>
+
+<div class="container py-5 mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">MedAI'ye Hoşgeldiniz</h1>
+        <p class="lead text-muted">Yapay Zeka Destekli Akıllı Sağlık Yönetim Sistemi</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        
+        <div class="col-md-5">
+            <a href="{% url 'login' %}" class="text-decoration-none">
+                <div class="card role-card h-100 bg-white shadow-sm p-4 text-center">
+                    <div class="card-body">
+                        <div class="role-icon text-info">
+                            <i class="fa-solid fa-hospital-user"></i>
+                        </div>
+                        <h2 class="fw-bold text-dark">Hasta Girişi</h2>
+                        <p class="text-muted mt-3">
+                            Randevu almak, reçetelerinizi görüntülemek ve AI asistan ile şikayet analizi yapmak için giriş yapın.
+                        </p>
+                        <button class="btn btn-outline-info btn-lg w-100 rounded-pill mt-3 fw-bold">
+                            Hasta Girişi Yap
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-5">
+            <a href="{% url 'login' %}" class="text-decoration-none">
+                <div class="card role-card h-100 bg-white shadow-sm p-4 text-center">
+                    <div class="card-body">
+                        <div class="role-icon text-primary">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <h2 class="fw-bold text-dark">Doktor Girişi</h2>
+                        <p class="text-muted mt-3">
+                            Randevularınızı yönetmek, hasta geçmişlerini incelemek ve günlük programınızı takip etmek için giriş yapın.
+                        </p>
+                        <button class="btn btn-outline-primary btn-lg w-100 rounded-pill mt-3 fw-bold">
+                            Doktor Paneli
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+    
+    <div class="text-center mt-5">
+        <p>Hesabınız yok mu? <a href="{% url 'register' %}" class="fw-bold">Hemen Kayıt Olun (Hasta)</a></p>
+    </div>
+</div>
+{% endblock %}

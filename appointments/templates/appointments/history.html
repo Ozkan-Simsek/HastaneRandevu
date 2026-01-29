@@ -4,10 +4,13 @@
 {% block content %}
 <div class="container py-4">
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-white py-4 px-4 border-bottom">
+        <div class="card-header bg-white py-4 px-4 border-bottom d-flex justify-content-between align-items-center">
             <h4 class="mb-0 fw-bold text-primary">
                 <i class="fa-solid fa-clock-rotate-left me-2"></i>Randevu Geçmişi
             </h4>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                <i class="fa-solid fa-arrow-left"></i> Panele Dön
+            </a>
         </div>
         <div class="card-body p-0">
             {% if appointments %}
@@ -19,11 +22,11 @@
                                 <th class="py-3">Başlık & Şikayet</th>
                                 <th class="py-3">Doktor</th>
                                 <th class="py-3">Durum</th>
-                            </tr>
+                                <th class="text-end pe-4 py-3">Detay</th> </tr>
                         </thead>
                         <tbody>
                             {% for app in appointments %}
-                            <tr style="cursor: pointer;">
+                            <tr>
                                 <td class="ps-4 py-3">
                                     <div class="d-flex align-items-center">
                                         <div class="bg-light text-dark rounded-3 d-flex flex-column align-items-center justify-content-center me-3 border" style="width: 50px; height: 50px;">
@@ -71,9 +74,16 @@
                                         </span>
                                     
                                     {% elif app.status.name == 'Completed' %}
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
-                                            <i class="fa-solid fa-check-double me-1"></i> Tamamlandı
-                                        </span>
+                                        <div class="d-flex flex-column align-items-start gap-1">
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
+                                                <i class="fa-solid fa-check-double me-1"></i> Tamamlandı
+                                            </span>
+                                            {% if app.prescription %}
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 rounded-pill" style="font-size: 0.7rem;">
+                                                    <i class="fa-solid fa-prescription-bottle-medical me-1"></i> Reçeteli
+                                                </span>
+                                            {% endif %}
+                                        </div>
 
                                     {% elif app.status.name == 'Approved' or app.status.name == 'Onaylandi' %}
                                         <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill">
@@ -90,6 +100,12 @@
                                             {{ app.status.name }}
                                         </span>
                                     {% endif %}
+                                </td>
+                                
+                                <td class="text-end pe-4 py-3">
+                                    <a href="{% url 'appointment_detail' app.pk %}" class="btn btn-sm btn-light border text-primary rounded-pill fw-bold hover-shadow">
+                                        İncele <i class="fa-solid fa-chevron-right ms-1"></i>
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}

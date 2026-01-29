@@ -76,10 +76,26 @@ WSGI_APPLICATION = 'proje_2.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'NAME': 'HastaneRandevuDB',
+        'USER': '',
+        'PASSWORD': '',
+
+        'HOST': 'SQL SERVER ADRESİNİZ', 
+        'PORT': '',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'extra_params': 'Trusted_Connection=yes',
+        },
     }
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
 
 
 # Password validation
@@ -104,9 +120,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'tr-tr'  # 'en-us' yerine bunu yaz
+LANGUAGE_CODE = 'tr-tr'
 
-TIME_ZONE = 'Europe/Istanbul'  # 'UTC' yerine bunu yaz (Saat farkı olmaması için)
+TIME_ZONE = 'Europe/Istanbul'
 
 USE_I18N = True
 USE_L10N = True
@@ -131,8 +147,9 @@ LOGOUT_URL="login"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'dashboard'  
-LOGOUT_REDIRECT_URL = 'login'     
+LOGIN_URL = 'login' 
+LOGIN_REDIRECT_URL = 'login_redirect' 
+LOGOUT_REDIRECT_URL = 'landing_page'
 
 
 

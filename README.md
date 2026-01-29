@@ -3,7 +3,6 @@
 MedAI, Django altyapısı ile geliştirilmiş; doktor, hasta ve yöneticiler için özelleştirilmiş paneller sunan, **PDF reçete üretebilen** ve **Yapay Zeka (AI)** destekli özelliklere sahip kapsamlı bir hastane otomasyonudur.
 
 ![Ana Ekran](screenshots/Anasayfa.png)
-*(Buraya dashboard veya ana sayfa resmini koy)*
 
 ---
 

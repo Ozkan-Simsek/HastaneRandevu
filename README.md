@@ -44,6 +44,15 @@ MedAI, Django altyapısı ile geliştirilmiş; doktor, hasta ve yöneticiler iç
 
 ---
 
+## 🛠 Kullanılan Teknolojiler
+Backend: Python 3.x, Django Framework
+
+Frontend: HTML5, CSS3, Bootstrap 5, FontAwesome
+
+PDF Engine: xhtml2pdf
+
+Veritabanı: Microsft SQL Server
+
 ## 💻 Kurulum ve Çalıştırma
 
 Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyebilirsiniz:
